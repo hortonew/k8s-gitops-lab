@@ -1,0 +1,116 @@
+apiVersion: rabbitmq.com/v1beta1
+kind: Exchange
+metadata:
+  name: state-exchange
+  namespace: rabbitmq
+spec:
+  name: state-exchange
+  type: direct
+  durable: true
+  rabbitmqClusterReference:
+    connectionSecret:
+      name: rabbit-creds
+---
+apiVersion: rabbitmq.com/v1beta1
+kind: Queue
+metadata:
+  name: new-queue
+  namespace: rabbitmq
+spec:
+  name: new
+  durable: true
+  rabbitmqClusterReference:
+    connectionSecret:
+      name: rabbit-creds
+---
+apiVersion: rabbitmq.com/v1beta1
+kind: Queue
+metadata:
+  name: active-queue
+  namespace: rabbitmq
+spec:
+  name: active
+  durable: true
+  rabbitmqClusterReference:
+    connectionSecret:
+      name: rabbit-creds
+---
+apiVersion: rabbitmq.com/v1beta1
+kind: Queue
+metadata:
+  name: finished-queue
+  namespace: rabbitmq
+spec:
+  name: finished
+  durable: true
+  rabbitmqClusterReference:
+    connectionSecret:
+      name: rabbit-creds
+---
+apiVersion: rabbitmq.com/v1beta1
+kind: Queue
+metadata:
+  name: completed-queue
+  namespace: rabbitmq
+spec:
+  name: completed
+  durable: true
+  rabbitmqClusterReference:
+    connectionSecret:
+      name: rabbit-creds
+---
+apiVersion: rabbitmq.com/v1beta1
+kind: Binding
+metadata:
+  name: new-binding
+  namespace: rabbitmq
+spec:
+  source: state-exchange
+  destination: new
+  destinationType: queue
+  routingKey: new
+  rabbitmqClusterReference:
+    connectionSecret:
+      name: rabbit-creds
+---
+apiVersion: rabbitmq.com/v1beta1
+kind: Binding
+metadata:
+  name: active-binding
+  namespace: rabbitmq
+spec:
+  source: state-exchange
+  destination: active
+  destinationType: queue
+  routingKey: active
+  rabbitmqClusterReference:
+    connectionSecret:
+      name: rabbit-creds
+---
+apiVersion: rabbitmq.com/v1beta1
+kind: Binding
+metadata:
+  name: finished-binding
+  namespace: rabbitmq
+spec:
+  source: state-exchange
+  destination: finished
+  destinationType: queue
+  routingKey: finished
+  rabbitmqClusterReference:
+    connectionSecret:
+      name: rabbit-creds
+---
+apiVersion: rabbitmq.com/v1beta1
+kind: Binding
+metadata:
+  name: completed-binding
+  namespace: rabbitmq
+spec:
+  source: state-exchange
+  destination: completed
+  destinationType: queue
+  routingKey: completed
+  rabbitmqClusterReference:
+    connectionSecret:
+      name: rabbit-creds

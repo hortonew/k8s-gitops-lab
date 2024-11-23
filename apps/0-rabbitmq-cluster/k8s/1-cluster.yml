@@ -1,0 +1,30 @@
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: rabbitmq
+
+---
+apiVersion: rabbitmq.com/v1beta1
+kind: RabbitmqCluster
+metadata:
+  name: rabbitmq
+  namespace: rabbitmq
+spec:
+  replicas: 1
+  rabbitmq:
+    additionalConfig: |
+      default_user = user
+      default_pass = password
+
+---
+# can't delete exchange/queue/binding resources (2.yml) if this secret doesn't exist, so leave this here
+apiVersion: v1
+kind: Secret
+metadata:
+  name: rabbit-creds
+  namespace: rabbitmq
+type: Opaque
+stringData:
+  username: user
+  password: password
+  uri: http://rabbitmq.rabbitmq.svc.cluster.local:15672
