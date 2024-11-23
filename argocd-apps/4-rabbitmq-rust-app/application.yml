@@ -1,7 +1,7 @@
 apiVersion: argoproj.io/v1alpha1
 kind: Application
 metadata:
-  name: rabbitmq-operators
+  name: rabbitmq-rust-app
   namespace: argocd
   finalizers:
     - resources-finalizer.argocd.argoproj.io
@@ -9,11 +9,11 @@ spec:
   project: default
   source:
     repoURL: https://github.com/hortonew/k8s-gitops-lab/
-    path: apps/0-rabbitmq-operators/k8s/
+    path: apps/1-rabbitmq-rust-app/k8s/
     targetRevision: HEAD
   destination:
     server: https://kubernetes.default.svc
-  syncPolicy: # Fixed indentation here
+  syncPolicy:
     automated:
       prune: true
       selfHeal: true

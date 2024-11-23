@@ -38,9 +38,25 @@ k apply -f argocd-apps/1-cert-manager/
 ### RabbitMQ Operators
 
 ```sh
+# curl -kLs -o apps/0-rabbitmq-operators/k8s/rabbitmq-cluster-operator.yml https://github.com/rabbitmq/cluster-operator/releases/latest/download/cluster-operator.yml  
+# curl -kLs -o  apps/0-rabbitmq-operators/k8s/rabbitmq-messaging-topology-operator.yml https://github.com/rabbitmq/messaging-topology-operator/releases/latest/download/messaging-topology-operator-with-certmanager.yaml
+
+# push these changes up if there are any, then run:
 k apply -f argocd-apps/2-rabbitmq-operators/
 ```
 
 ## Apps
 
-TBD
+### RabbitMQ Cluster
+
+```sh
+k apply -f argocd-apps/3-rabbitmq-cluster/
+```
+
+### RabbitMQ Rust App
+
+App to make use of queues in rabbitmqa
+
+```sh
+k apply -f argocd-apps/4-rabbitmq-rust-app/
+```
