@@ -10,6 +10,8 @@ kind create cluster --name gitops --config kind_config.yml
 
 ## ArgoCD
 
+![ArgoCD Applications](images/argocd-applications.png)
+
 ```sh
 # Install
 helm upgrade --install argo-cd bitnami/argo-cd --create-namespace -n argocd -f helm/values/argocd.yml
@@ -58,3 +60,5 @@ TODO: Should also build a rust app that makes use of these queues, and push to D
 ```sh
 k apply -f argocd-apps/4-rabbitmq-rust-app/
 ```
+
+![RabbitMQ Queues](images/rabbitmq-queues.png)
