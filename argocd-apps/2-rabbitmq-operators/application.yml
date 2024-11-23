@@ -1,20 +1,19 @@
 apiVersion: argoproj.io/v1alpha1
 kind: Application
 metadata:
-  name: rabbitmq-cluster-operator
+  name: rabbitmq-cluster
   namespace: argocd
   finalizers:
     - resources-finalizer.argocd.argoproj.io
 spec:
   project: default
   source:
-    repoURL: https://github.com/rabbitmq/cluster-operator/
-    targetRevision: main
-    path: config/
+    repoURL: https://github.com/hortonew/k8s-gitops-lab/
+    path: apps/0-rabbitmq-operators/k8s/
+    targetRevision: HEAD
   destination:
     server: https://kubernetes.default.svc
-    namespace: rabbitmq-system
-  syncPolicy:
+  syncPolicy: # Fixed indentation here
     automated:
       prune: true
       selfHeal: true
