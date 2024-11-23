@@ -11,10 +11,6 @@ kind create cluster --name gitops --config kind_config.yml
 ## ArgoCD
 
 ```sh
-# Set up configuration
-mkdir -p helm/values
-helm show values bitnami/argo-cd --version 7.0.20 > helm/values/defaults-argocd.yml
-
 # Install
 helm upgrade --install argo-cd bitnami/argo-cd --create-namespace -n argocd -f helm/values/argocd.yml
 k get secrets argocd-secret -n argocd -o yaml | grep clearPassword | awk '{print $2}' | base64 -d
@@ -55,7 +51,7 @@ k apply -f argocd-apps/3-rabbitmq-cluster/
 
 ### RabbitMQ Rust App
 
-App to make use of queues in rabbitmqa
+App to make use of queues in rabbitmq
 
 ```sh
 k apply -f argocd-apps/4-rabbitmq-rust-app/
