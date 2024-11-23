@@ -9,7 +9,7 @@ spec:
   project: default
   source:
     repoURL: https://github.com/hortonew/k8s-gitops-lab/
-    path: apps/0-rabbitmq-cluster/k8s/
+    path: apps/1-rabbitmq-cluster/k8s/
     targetRevision: HEAD
   destination:
     server: https://kubernetes.default.svc
