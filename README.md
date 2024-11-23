@@ -51,7 +51,9 @@ k apply -f argocd-apps/3-rabbitmq-cluster/
 
 ### RabbitMQ Rust App
 
-App to make use of queues in rabbitmq
+App to make use of queues in rabbitmq.
+
+TODO: Should also build a rust app that makes use of these queues, and push to Dockerhub.
 
 ```sh
 k apply -f argocd-apps/4-rabbitmq-rust-app/
