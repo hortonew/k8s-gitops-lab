@@ -68,3 +68,15 @@ Start to build out ingress controllers (nginx/traefik), but first we need some I
 ```sh
 k apply -f argocd-apps/5-metallb/
 ```
+
+### Traefik Ingress
+
+```sh
+k apply -f argocd-apps/6-ingress-controller-traefik/
+```
+
+### Nginx Ingress
+
+```sh
+k apply -f argocd-apps/6-ingress-controller-nginx
+```

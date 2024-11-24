@@ -1,0 +1,51 @@
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: traefik-ingress
+  namespace: argocd
+  finalizers:
+    - resources-finalizer.argocd.argoproj.io
+spec:
+  project: default
+  source:
+    repoURL: https://helm.traefik.io/traefik
+    targetRevision: "33.0.0"
+    chart: traefik
+    helm:
+      version: v3
+      releaseName: traefik-ingress
+      values: |
+        deployment:
+          replicas: 2
+        service:
+          type: LoadBalancer
+          annotations:
+            metallb.universe.tf/address-pool: default
+        ingressClass:
+          enabled: true
+          isDefaultClass: true
+        ports:
+          web:
+            expose:
+              default: true  # Corrected to match schema
+            port: 9090
+            protocol: TCP
+            exposePort: 80
+          websecure:
+            expose:
+              default: true  # Corrected to match schema
+            port: 9443
+            protocol: TCP
+            exposePort: 443
+  destination:
+    server: https://kubernetes.default.svc
+    namespace: traefik
+  syncPolicy:
+    automated:
+      prune: true
+      selfHeal: true
+    syncOptions:
+      - Validate=true
+      - CreateNamespace=true
+      - PrunePropagationPolicy=foreground
+      - PruneLast=true
