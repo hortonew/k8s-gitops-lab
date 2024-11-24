@@ -60,3 +60,11 @@ k apply -f argocd-apps/4-rabbitmq-rust-app/
 ```
 
 ![RabbitMQ Queues](images/rabbitmq-queues.png)
+
+### Metallb
+
+Start to build out ingress controllers (nginx/traefik), but first we need some IPs.
+
+```sh
+k apply -f argocd-apps/5-metallb/
+```
