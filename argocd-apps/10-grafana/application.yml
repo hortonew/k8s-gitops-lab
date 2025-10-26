@@ -44,6 +44,13 @@ spec:
               url: http://prometheus-kube-prometheus-prometheus.prometheus.svc.cluster.local:9090
               access: proxy
               isDefault: true
+            - name: Loki
+              type: loki
+              uid: loki-main
+              url: http://loki.loki.svc.cluster.local:3100
+              access: proxy
+              jsonData:
+                maxLines: 1000
             - name: Argo-Workflows-Metrics
               type: prometheus
               uid: argo-workflows-prometheus

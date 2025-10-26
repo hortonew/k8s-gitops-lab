@@ -5,7 +5,7 @@ default:
     @just --list
 
 # Set up the complete lab environment
-setup: create-cluster install-argocd install-prometheus-argocd install-grafana-argocd install-metrics-server install-minio port-forward
+setup: create-cluster install-argocd install-prometheus-argocd install-grafana-argocd install-metrics-server install-minio install-loki-argocd install-promtail-argocd port-forward
     @echo "🎉 Lab setup complete!"
     @echo ""
     @echo "Grafana UI: http://localhost:3000 (admin/admin)"
@@ -101,8 +101,39 @@ install-grafana-argocd:
     kubectl apply -f argocd-apps/10-grafana/application.yml
     @echo "✅ Grafana application deployed via ArgoCD"
 
+# Install Loki via ArgoCD Application
+install-loki-argocd:
+    @echo "📝 Installing Loki via ArgoCD Application..."
+    kubectl apply -f argocd-apps/11-loki/application.yml
+    @echo "✅ Loki application deployed via ArgoCD"
+
+# Install Promtail via ArgoCD Application
+install-promtail-argocd:
+    @echo "📋 Installing Promtail via ArgoCD Application..."
+    kubectl apply -f argocd-apps/12-promtail/application.yml
+    @echo "✅ Promtail application deployed via ArgoCD"
+
+# Wait for ArgoCD applications to sync
+wait-for-argo-sync:
+    @echo "⏳ Waiting for ArgoCD applications to sync..."
+    @echo "Checking metrics-server..."
+    @kubectl wait --for=jsonpath='{.status.sync.status}'=Synced -n argocd application/metrics-server --timeout=300s 2>/dev/null || true
+    @echo "Checking minio..."
+    @kubectl wait --for=jsonpath='{.status.sync.status}'=Synced -n argocd application/minio --timeout=300s 2>/dev/null || true
+    @echo "Checking prometheus..."
+    @kubectl wait --for=jsonpath='{.status.sync.status}'=Synced -n argocd application/prometheus --timeout=300s 2>/dev/null || true
+    @echo "Checking blackbox-exporter..."
+    @kubectl wait --for=jsonpath='{.status.sync.status}'=Synced -n argocd application/blackbox-exporter --timeout=300s 2>/dev/null || true
+    @echo "Checking grafana..."
+    @kubectl wait --for=jsonpath='{.status.sync.status}'=Synced -n argocd application/grafana --timeout=300s 2>/dev/null || true
+    @echo "Checking loki..."
+    @kubectl wait --for=jsonpath='{.status.sync.status}'=Synced -n argocd application/loki --timeout=300s 2>/dev/null || true
+    @echo "Checking promtail..."
+    @kubectl wait --for=jsonpath='{.status.sync.status}'=Synced -n argocd application/promtail --timeout=300s 2>/dev/null || true
+    @echo "✅ All ArgoCD applications are synced!"
+
 # Port forward
-port-forward:
+port-forward: wait-for-argo-sync
     @echo "🌐 Port forwarding all services..."
     @echo "  Grafana UI: http://localhost:3000"
     @echo "  Prometheus UI: http://localhost:9090"
