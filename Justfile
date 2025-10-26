@@ -5,7 +5,7 @@ default:
     @just --list
 
 # Set up the complete lab environment
-setup: create-cluster install-argocd install-prometheus-argocd install-grafana-argocd install-metrics-server install-cert-manager install-minio install-loki-argocd install-promtail-argocd port-forward
+setup: create-cluster install-argocd install-prometheus-argocd install-grafana-argocd install-metrics-server install-cert-manager install-minio install-loki-argocd install-promtail-argocd install-rabbitmq-operators install-rabbitmq-cluster install-rabbitmq-rust-app port-forward
     @echo "🎉 Lab setup complete!"
     @echo ""
     @echo "Grafana UI: http://localhost:3000 (admin/admin)"
@@ -118,6 +118,24 @@ install-promtail-argocd:
     @echo "📋 Installing Promtail via ArgoCD Application..."
     kubectl apply -f argocd-apps/12-promtail/application.yml
     @echo "✅ Promtail application deployed via ArgoCD"
+
+# Install RabbitMQ Operators via ArgoCD Application
+install-rabbitmq-operators:
+    @echo "🐰 Installing RabbitMQ Operators via ArgoCD Application..."
+    kubectl apply -f argocd-apps/2-rabbitmq-operators/application.yml
+    @echo "✅ RabbitMQ Operators application deployed via ArgoCD"
+
+# Install RabbitMQ Cluster via ArgoCD Application
+install-rabbitmq-cluster:
+    @echo "🐰 Installing RabbitMQ Cluster via ArgoCD Application..."
+    kubectl apply -f argocd-apps/3-rabbitmq-cluster/application.yml
+    @echo "✅ RabbitMQ Cluster application deployed via ArgoCD"
+
+# Install RabbitMQ Rust App via ArgoCD Application
+install-rabbitmq-rust-app:
+    @echo "🦀 Installing RabbitMQ Rust App via ArgoCD Application..."
+    kubectl apply -f argocd-apps/4-rabbitmq-rust-app/application.yml
+    @echo "✅ RabbitMQ Rust App application deployed via ArgoCD"
 
 # Wait for ArgoCD applications to sync
 wait-for-argo-sync:

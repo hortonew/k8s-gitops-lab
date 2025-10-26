@@ -4,7 +4,7 @@ metadata:
   name: rabbitmq-operators
   namespace: argocd
   finalizers:
-    - resources-finalizer.argocd.argoproj.io
+  - resources-finalizer.argocd.argoproj.io
 spec:
   project: default
   source:
@@ -13,13 +13,13 @@ spec:
     targetRevision: HEAD
   destination:
     server: https://kubernetes.default.svc
-  syncPolicy: # Fixed indentation here
+  syncPolicy:
     automated:
       prune: true
       selfHeal: true
       allowEmpty: false
     syncOptions:
-      - Validate=true
-      - CreateNamespace=true
-      - PrunePropagationPolicy=foreground
-      - PruneLast=true
+    - Validate=true
+    - CreateNamespace=true
+    - PrunePropagationPolicy=foreground
+    - PruneLast=true

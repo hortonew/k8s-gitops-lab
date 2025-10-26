@@ -4,7 +4,7 @@ metadata:
   name: rabbitmq-rust-app-producer
   namespace: argocd
   finalizers:
-    - resources-finalizer.argocd.argoproj.io
+  - resources-finalizer.argocd.argoproj.io
 spec:
   project: default
   source:
@@ -19,11 +19,10 @@ spec:
       selfHeal: true
       allowEmpty: false
     syncOptions:
-      - Validate=true
-      - CreateNamespace=true
-      - PrunePropagationPolicy=foreground
-      - PruneLast=true
-
+    - Validate=true
+    - CreateNamespace=true
+    - PrunePropagationPolicy=foreground
+    - PruneLast=true
 ---
 apiVersion: argoproj.io/v1alpha1
 kind: Application
@@ -31,7 +30,7 @@ metadata:
   name: rabbitmq-rust-app-consumer
   namespace: argocd
   finalizers:
-    - resources-finalizer.argocd.argoproj.io
+  - resources-finalizer.argocd.argoproj.io
 spec:
   project: default
   source:
@@ -46,7 +45,7 @@ spec:
       selfHeal: true
       allowEmpty: false
     syncOptions:
-      - Validate=true
-      - CreateNamespace=true
-      - PrunePropagationPolicy=foreground
-      - PruneLast=true
+    - Validate=true
+    - CreateNamespace=true
+    - PrunePropagationPolicy=foreground
+    - PruneLast=true

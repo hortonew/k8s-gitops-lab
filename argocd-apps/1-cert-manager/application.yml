@@ -4,7 +4,7 @@ metadata:
   name: cert-manager
   namespace: argocd
   finalizers:
-    - resources-finalizer.argocd.argoproj.io
+  - resources-finalizer.argocd.argoproj.io
 spec:
   project: default
   source:
@@ -24,7 +24,7 @@ spec:
       selfHeal: true
       allowEmpty: false
     syncOptions:
-      - Validate=true
-      - CreateNamespace=true
-      - PrunePropagationPolicy=foreground
-      - PruneLast=true
+    - Validate=true
+    - CreateNamespace=true
+    - PrunePropagationPolicy=foreground
+    - PruneLast=true
