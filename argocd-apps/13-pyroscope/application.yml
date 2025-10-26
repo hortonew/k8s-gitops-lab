@@ -1,0 +1,66 @@
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: pyroscope
+  namespace: argocd
+spec:
+  project: default
+  source:
+    repoURL: https://grafana.github.io/helm-charts
+    chart: pyroscope
+    targetRevision: 1.15.1
+    helm:
+      valuesObject:
+        # Pyroscope configuration
+        pyroscope:
+          # Resource limits for lab environment
+          resources:
+            limits:
+              cpu: 500m
+              memory: 512Mi
+            requests:
+              cpu: 200m
+              memory: 256Mi
+
+          # Persistence - using ephemeral storage for lab
+          persistence:
+            enabled: false
+
+          # Service configuration
+          service:
+            type: ClusterIP
+            port: 4040
+
+          # Extra environment variables for configuration
+          extraEnvVars:
+          - name: PYROSCOPE_LOG_LEVEL
+            value: "info"
+
+        # Service Monitor for Prometheus scraping
+        serviceMonitor:
+          enabled: true
+          labels:
+            release: prometheus
+
+        # Ingress - disabled for lab (use port-forward)
+        ingress:
+          enabled: false
+
+        # Agent mode - disabled (we'll push from applications)
+        agent:
+          enabled: false
+
+        # Alloy integration - disabled for now
+        alloy:
+          enabled: false
+
+  destination:
+    server: https://kubernetes.default.svc
+    namespace: pyroscope
+
+  syncPolicy:
+    automated:
+      prune: true
+      selfHeal: true
+    syncOptions:
+    - CreateNamespace=true

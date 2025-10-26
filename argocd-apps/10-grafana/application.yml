@@ -51,6 +51,13 @@ spec:
               access: proxy
               jsonData:
                 maxLines: 1000
+            - name: Pyroscope
+              type: grafana-pyroscope-datasource
+              uid: pyroscope-main
+              url: http://pyroscope.pyroscope.svc.cluster.local:4040
+              access: proxy
+              jsonData:
+                minStep: '15s'
             - name: Argo-Workflows-Metrics
               type: prometheus
               uid: argo-workflows-prometheus
@@ -79,6 +86,7 @@ spec:
             allow_embedding: true
 
         # Basic plugins for Kubernetes monitoring
+        # Note: grafana-pyroscope-datasource is a core plugin in Grafana 8.8+ and doesn't need to be installed
         plugins:
         - grafana-kubernetes-app
         # Sidecar configuration for auto-loading dashboards

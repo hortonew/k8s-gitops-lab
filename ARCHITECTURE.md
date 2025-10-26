@@ -15,6 +15,8 @@ graph TB
     Grafana[Grafana]
     Loki[Loki]
     Promtail[Promtail]
+    Pyroscope[Pyroscope]
+    RabbitMQ[RabbitMQ Stack]
     
     ArgoCD -->|Manages| MetricsServer
     ArgoCD -->|Manages| Minio
@@ -23,6 +25,8 @@ graph TB
     ArgoCD -->|Manages| Grafana
     ArgoCD -->|Manages| Loki
     ArgoCD -->|Manages| Promtail
+    ArgoCD -->|Manages| Pyroscope
+    ArgoCD -->|Manages| RabbitMQ
     
     classDef gitops fill:#e8f5e9,stroke:#1b5e20,stroke-width:2px
     class ArgoCD gitops
@@ -99,4 +103,34 @@ graph TB
     class Loki,Promtail logging
     class Minio,LokiChunks,LokiRuler,LokiAdmin storage
     class Grafana viz
+```
+
+## 4. Continuous Profiling (Pyroscope)
+
+```mermaid
+graph TB
+    subgraph "Application Sources"
+        RustProducer[RabbitMQ Rust Producer]
+        RustConsumer[RabbitMQ Rust Consumer]
+    end
+    
+    Pyroscope[Pyroscope<br/>Profiling Backend<br/>Port 4040]
+    Grafana[Grafana<br/>Profile Visualization<br/>Port 3000]
+    Prometheus[Prometheus<br/>Metrics Correlation]
+    
+    RustProducer -->|Push profiles<br/>HTTP| Pyroscope
+    RustConsumer -->|Push profiles<br/>HTTP| Pyroscope
+    Pyroscope -->|Query profiles| Grafana
+    Prometheus -->|Metrics correlation| Grafana
+    
+    classDef profiling fill:#fff9c4,stroke:#f57f17,stroke-width:2px
+    classDef apps fill:#ffebee,stroke:#b71c1c,stroke-width:2px
+    classDef viz fill:#e1f5ff,stroke:#01579b,stroke-width:2px
+    
+    class Pyroscope profiling
+    class RustProducer,RustConsumer apps
+    class Grafana,Prometheus viz
+```
+
+````
 ```
