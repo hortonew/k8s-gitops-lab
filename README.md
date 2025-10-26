@@ -2,6 +2,32 @@
 
 An environment to play around with different gitops tools.
 
+## Setup
+
+```sh
+just setup
+```
+
+## Port Forward
+
+Note: Setup does this automatically now and waits for services to be ready.
+
+```sh
+just port-forward
+# navigate to applications: 
+#   Grafana UI: http://localhost:3000
+#   Prometheus UI: http://localhost:9090
+#   ArgoCD UI: http://localhost:8080
+#   Minio API: http://localhost:9000
+#   Minio Console: http://localhost:9001
+```
+
+## Teardown
+
+```sh
+just destroy
+```
+
 ## Kind
 
 ```sh
@@ -19,18 +45,6 @@ k get secrets argocd-secret -n argocd -o yaml | grep clearPassword | awk '{print
 
 # GUI
 k port-forward svc/argo-cd-server -n argocd 8081:80
-```
-
-### Metrics Server
-
-```sh
-k apply -f argocd-apps/0-metrics-server/
-```
-
-### Cert Manager
-
-```sh
-k apply -f argocd-apps/1-cert-manager/
 ```
 
 ### RabbitMQ Operators

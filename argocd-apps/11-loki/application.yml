@@ -68,6 +68,13 @@ spec:
                 prefix: index_
                 period: 24h
 
+          # Ingester configuration - force faster flushing to S3 for testing
+          ingester:
+            chunk_idle_period: 5m # Flush chunks after 5 minutes of inactivity
+            chunk_target_size: 524288 # 512KB target chunk size (smaller = faster flush)
+            max_chunk_age: 10m # Flush chunks older than 10 minutes
+            flush_check_period: 1m # Check for flushable chunks every minute
+
           # Limits configuration
           limits_config:
             max_query_lookback: 25h
