@@ -74,6 +74,20 @@ serviceMonitor:
     interval: 30s
     scrapeTimeout: 10s
 
+  # Probe Minio API endpoint
+  - name: minio-api
+    url: http://minio.minio.svc.cluster.local:9000/minio/health/live
+    module: http_2xx
+    interval: 30s
+    scrapeTimeout: 10s
+
+  # Probe Minio Console UI
+  - name: minio-console
+    url: http://minio-console.minio.svc.cluster.local:9001
+    module: http_2xx
+    interval: 30s
+    scrapeTimeout: 10s
+
 # Pod annotations for Prometheus scraping
 podAnnotations:
   prometheus.io/scrape: "true"

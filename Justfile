@@ -5,11 +5,13 @@ default:
     @just --list
 
 # Set up the complete lab environment
-setup: create-cluster install-prometheus install-blackbox install-grafana install-argocd port-forward
+setup: create-cluster install-prometheus install-blackbox install-grafana install-argocd install-metrics-server install-minio port-forward
     @echo "🎉 Lab setup complete!"
     @echo ""
     @echo "Grafana UI: http://localhost:3000 (admin/admin)"
     @echo "Prometheus UI: http://localhost:9090"
+    @echo "Minio API: http://localhost:9000 (minio/minio123)"
+    @echo "Minio Console: http://localhost:9001 (minio/minio123)"
     @echo ""
     @echo "To access services:"
     @echo "  just port-forward"
@@ -74,17 +76,35 @@ install-grafana:
         --wait
     @echo "✅ Grafana installed"
 
+# Install Metrics Server via Argocd Application
+install-metrics-server:
+    @echo "🚀 Installing Metrics Server via ArgoCD Application..."
+    kubectl apply -f argocd-apps/0-metrics-server/application.yml
+    @echo "✅ Metrics Server application deployed via ArgoCD"
+
+# Install Minio via ArgoCD Application
+install-minio:
+    @echo "🚀 Installing Minio via ArgoCD Application..."
+    kubectl apply -f argocd-apps/7-minio/application.yml
+    #echo "💤 Waiting for Minio to be ready..."
+    kubectl -n minio wait --for=condition=available --timeout=120s deployment/minio
+    @echo "✅ Minio application deployed via ArgoCD"
+
 # Port forward
 port-forward:
     @echo "🌐 Port forwarding all services..."
     @echo "  Grafana UI: http://localhost:3000"
     @echo "  Prometheus UI: http://localhost:9090"
     @echo "  ArgoCD UI: http://localhost:8080"
+    @echo "  Minio API: http://localhost:9000"
+    @echo "  Minio Console: http://localhost:9001"
     @echo ""
     @echo "Press Ctrl+C to stop the port forwards"
     kubectl port-forward -n grafana svc/grafana 3000:80 & \
     kubectl port-forward -n prometheus svc/prometheus-kube-prometheus-prometheus 9090:9090 & \
     kubectl port-forward -n argocd svc/argo-cd-argocd-server 8080:80 & \
+    kubectl port-forward -n minio svc/minio 9000:9000 & \
+    kubectl port-forward -n minio svc/minio-console 9001:9001 & \
     wait
 
 # Get argocd admin password
