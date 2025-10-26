@@ -5,7 +5,7 @@ default:
     @just --list
 
 # Set up the complete lab environment
-setup: create-cluster install-argocd install-prometheus-argocd install-grafana-argocd install-metrics-server install-minio install-loki-argocd install-promtail-argocd port-forward
+setup: create-cluster install-argocd install-prometheus-argocd install-grafana-argocd install-metrics-server install-cert-manager install-minio install-loki-argocd install-promtail-argocd port-forward
     @echo "🎉 Lab setup complete!"
     @echo ""
     @echo "Grafana UI: http://localhost:3000 (admin/admin)"
@@ -81,6 +81,12 @@ install-metrics-server:
     @echo "🚀 Installing Metrics Server via ArgoCD Application..."
     kubectl apply -f argocd-apps/0-metrics-server/application.yml
     @echo "✅ Metrics Server application deployed via ArgoCD"
+
+# Install Cert Manager via Argocd Application
+install-cert-manager:
+    @echo "🚀 Installing Cert Manager via ArgoCD Application..."
+    kubectl apply -f argocd-apps/1-cert-manager/application.yml
+    @echo "✅ Cert Manager application deployed via ArgoCD"
 
 # Install Minio via ArgoCD Application
 install-minio:
