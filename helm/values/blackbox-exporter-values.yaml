@@ -1,0 +1,87 @@
+# Blackbox Exporter Helm values
+# Used for probing endpoints (HTTP, HTTPS, TCP, ICMP, DNS)
+# https://artifacthub.io/packages/helm/prometheus-community/prometheus-blackbox-exporter
+
+# Blackbox exporter configuration
+config:
+  modules:
+    http_2xx:
+      prober: http
+      timeout: 5s
+      http:
+        valid_http_versions: [ "HTTP/1.1", "HTTP/2.0" ]
+        valid_status_codes: [] # Defaults to 2xx
+        method: GET
+        preferred_ip_protocol: "ip4"
+        follow_redirects: true
+        fail_if_ssl: false
+        fail_if_not_ssl: false
+
+    http_post_2xx:
+      prober: http
+      timeout: 5s
+      http:
+        method: POST
+        valid_status_codes: []
+
+    tcp_connect:
+      prober: tcp
+      timeout: 5s
+
+    icmp:
+      prober: icmp
+      timeout: 5s
+
+# Resource limits for lab environment
+resources:
+  limits:
+    cpu: 100m
+    memory: 128Mi
+  requests:
+    cpu: 50m
+    memory: 64Mi
+
+# Service monitor to scrape blackbox exporter metrics
+serviceMonitor:
+  enabled: true
+  defaults:
+    labels:
+      release: prometheus
+      prometheus: kube-prometheus
+    interval: 30s
+    scrapeTimeout: 30s
+
+  # Define targets to probe
+  targets:
+  # Example: Probe Kubernetes API server
+  - name: kubernetes-api
+    url: https://kubernetes.default.svc.cluster.local:443
+    module: http_2xx
+    interval: 30s
+    scrapeTimeout: 10s
+
+  # Example: Probe ArgoCD (when installed)
+  - name: argocd-server
+    url: http://argo-cd-argocd-server.argocd.svc.cluster.local
+    module: http_2xx
+    interval: 30s
+    scrapeTimeout: 10s
+
+  # Example: Probe Grafana
+  - name: grafana
+    url: http://grafana.grafana.svc.cluster.local
+    module: http_2xx
+    interval: 30s
+    scrapeTimeout: 10s
+
+# Pod annotations for Prometheus scraping
+podAnnotations:
+  prometheus.io/scrape: "true"
+  prometheus.io/port: "9115"
+
+# Enable pod security policy (set to false for most clusters)
+pspEnabled: false
+
+# Network policy
+networkPolicy:
+  enabled: false

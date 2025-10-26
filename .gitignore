@@ -1,2 +1,4 @@
 helm/values/defaults-*
 target/
+tmp/
+TODO.md

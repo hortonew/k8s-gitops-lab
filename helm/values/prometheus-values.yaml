@@ -1,0 +1,142 @@
+# Prometheus Helm values - optimized for lab environment with full k8s metrics
+# This uses kube-prometheus-stack which includes:
+# - Prometheus server
+# - Node exporter (for node metrics)
+# - Kube-state-metrics (for k8s object metrics)
+# - Alert manager
+# - Grafana (disabled since we install it separately)
+
+# https://artifacthub.io/packages/helm/prometheus-community/kube-prometheus-stack
+
+# Disable Grafana since we install it separately
+grafana:
+  enabled: false
+
+# Prometheus server configuration
+prometheus:
+  prometheusSpec:
+    # Resource limits for lab environment
+    resources:
+      limits:
+        cpu: 500m
+        memory: 1Gi
+      requests:
+        cpu: 200m
+        memory: 512Mi
+
+    # Storage configuration - use emptyDir for lab
+    storageSpec: {}
+
+    # Service monitor discovery
+    serviceMonitorSelectorNilUsesHelmValues: false
+    podMonitorSelectorNilUsesHelmValues: false
+    ruleSelectorNilUsesHelmValues: false
+
+    # Retention configuration
+    retention: 15d
+    retentionSize: 10GB
+
+    # Enable admin API for easier management
+    enableAdminAPI: true
+
+# AlertManager configuration - minimal for lab
+alertmanager:
+  alertmanagerSpec:
+    resources:
+      limits:
+        cpu: 100m
+        memory: 128Mi
+      requests:
+        cpu: 50m
+        memory: 64Mi
+    storage: {}
+
+# Node exporter - collects node-level metrics
+nodeExporter:
+  enabled: true
+  resources:
+    limits:
+      cpu: 100m
+      memory: 128Mi
+    requests:
+      cpu: 50m
+      memory: 64Mi
+
+# Kube-state-metrics - collects Kubernetes object metrics
+kubeStateMetrics:
+  enabled: true
+  resources:
+    limits:
+      cpu: 100m
+      memory: 128Mi
+    requests:
+      cpu: 50m
+      memory: 64Mi
+
+# Prometheus operator configuration
+prometheusOperator:
+  resources:
+    limits:
+      cpu: 200m
+      memory: 256Mi
+    requests:
+      cpu: 100m
+      memory: 128Mi
+
+  # Service monitor for the operator itself
+  serviceMonitor:
+    enabled: true
+
+# Default rules for Kubernetes monitoring
+defaultRules:
+  create: true
+  rules:
+    alertmanager: true
+    etcd: true
+    configReloaders: true
+    general: true
+    k8s: true
+    kubeApiserverAvailability: true
+    kubeApiserverBurnrate: true
+    kubeApiserverHistogram: true
+    kubeApiserverSlos: true
+    kubelet: true
+    kubeProxy: true
+    kubePrometheusGeneral: true
+    kubePrometheusNodeRecording: true
+    kubernetesApps: true
+    kubernetesResources: true
+    kubernetesStorage: true
+    kubernetesSystem: true
+    kubeScheduler: true
+    kubeStateMetrics: true
+    network: true
+    node: true
+    nodeExporterAlerting: true
+    nodeExporterRecording: true
+    prometheus: true
+    prometheusOperator: true
+
+# Additional service monitors for comprehensive k8s monitoring
+additionalServiceMonitors:
+# Monitor CoreDNS
+- name: coredns
+  endpoints:
+  - port: http-metrics
+  namespaceSelector:
+    matchNames:
+    - kube-system
+  selector:
+    matchLabels:
+      k8s-app: kube-dns
+
+# Monitor kube-proxy (if available)
+- name: kube-proxy
+  endpoints:
+  - port: http-metrics
+  namespaceSelector:
+    matchNames:
+    - kube-system
+  selector:
+    matchLabels:
+      k8s-app: kube-proxy
