@@ -2,7 +2,6 @@ apiVersion: v1
 kind: Namespace
 metadata:
   name: rabbitmq-rust-app
-
 ---
 apiVersion: v1
 kind: Secret
@@ -15,7 +14,6 @@ stringData:
   password: password
   uri: http://rabbitmq.rabbitmq.svc.cluster.local:15672
   rabbitmq_url: amqp://user:password@rabbitmq.rabbitmq.svc.cluster.local:5672
-
 ---
 apiVersion: batch/v1
 kind: CronJob
@@ -29,32 +27,36 @@ spec:
       template:
         spec:
           containers:
-            - name: rabbitmq-rust-app
-              image: hortonew/rabbitmq-rust-app:0.0.6
-              imagePullPolicy: IfNotPresent
-              resources:
-                requests:
-                  memory: "64Mi"
-                  cpu: "250m"
-                limits:
-                  memory: "128Mi"
-                  cpu: "500m"
-              env:
-                - name: RABBITMQ_USERNAME
-                  valueFrom:
-                    secretKeyRef:
-                      name: rabbit-creds
-                      key: username
-                - name: RUST_LOG
-                  value: info
-                - name: RABBITMQ_PASSWORD
-                  valueFrom:
-                    secretKeyRef:
-                      name: rabbit-creds
-                      key: password
-                - name: RABBITMQ_URL
-                  valueFrom:
-                    secretKeyRef:
-                      name: rabbit-creds
-                      key: rabbitmq_url
+          - name: rabbitmq-rust-app
+            image: hortonew/rabbitmq-rust-app:0.0.8
+            imagePullPolicy: IfNotPresent
+            resources:
+              requests:
+                memory: "128Mi"
+                cpu: "250m"
+              limits:
+                memory: "1Gi"
+                cpu: "500m"
+            env:
+            - name: RABBITMQ_USERNAME
+              valueFrom:
+                secretKeyRef:
+                  name: rabbit-creds
+                  key: username
+            - name: RUST_LOG
+              value: info
+            - name: RABBITMQ_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: rabbit-creds
+                  key: password
+            - name: RABBITMQ_URL
+              valueFrom:
+                secretKeyRef:
+                  name: rabbit-creds
+                  key: rabbitmq_url
+            - name: PYROSCOPE_SERVER_ADDRESS
+              value: "http://pyroscope.pyroscope.svc.cluster.local:4040"
+            - name: PYROSCOPE_APPLICATION_NAME
+              value: "rabbitmq-rust-producer"
           restartPolicy: OnFailure

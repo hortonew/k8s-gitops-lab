@@ -14,21 +14,25 @@ spec:
         app: rabbitmq-consumer
     spec:
       containers:
-        - name: rabbitmq-consumer
-          image: hortonew/rabbitmq-rust-app-consumer:0.0.2
-          imagePullPolicy: IfNotPresent
-          env:
-            - name: RABBITMQ_URL
-              valueFrom:
-                secretKeyRef:
-                  name: rabbit-creds
-                  key: rabbitmq_url
-            - name: RUST_LOG
-              value: info
-          resources:
-            requests:
-              memory: "64Mi"
-              cpu: "250m"
-            limits:
-              memory: "128Mi"
-              cpu: "500m"
+      - name: rabbitmq-consumer
+        image: hortonew/rabbitmq-rust-app-consumer:0.0.4
+        imagePullPolicy: IfNotPresent
+        env:
+        - name: RABBITMQ_URL
+          valueFrom:
+            secretKeyRef:
+              name: rabbit-creds
+              key: rabbitmq_url
+        - name: RUST_LOG
+          value: info
+        - name: PYROSCOPE_SERVER_ADDRESS
+          value: "http://pyroscope.pyroscope.svc.cluster.local:4040"
+        - name: PYROSCOPE_APPLICATION_NAME
+          value: "rabbitmq-rust-consumer"
+        resources:
+          requests:
+            memory: "128Mi"
+            cpu: "250m"
+          limits:
+            memory: "512Mi"
+            cpu: "500m"
