@@ -5,7 +5,7 @@ metadata:
   name: metrics-server
   namespace: argocd
   finalizers:
-    - resources-finalizer.argocd.argoproj.io
+  - resources-finalizer.argocd.argoproj.io
 spec:
   project: default
   source:
@@ -14,11 +14,11 @@ spec:
     chart: metrics-server
     helm:
       version: v3
-      releaseName: my-metrics
+      releaseName: metrics-server
       passCredentials: false
       parameters:
-        - name: "image.tag"
-          value: v0.7.2
+      - name: "image.tag"
+        value: v0.7.2
       values: |
         defaultArgs:
         - --cert-dir=/tmp
@@ -35,7 +35,7 @@ spec:
       selfHeal: true
       allowEmpty: false
     syncOptions:
-      - Validate=true
-      - CreateNamespace=true
-      - PrunePropagationPolicy=foreground
-      - PruneLast=true
+    - Validate=true
+    - CreateNamespace=true
+    - PrunePropagationPolicy=foreground
+    - PruneLast=true

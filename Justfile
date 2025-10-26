@@ -87,6 +87,11 @@ port-forward:
     kubectl port-forward -n argocd svc/argo-cd-argocd-server 8080:80 & \
     wait
 
+# Get argocd admin password
+get-argocd-password:
+    @echo "ArgoCD admin password:"
+    @kubectl -n argocd get secret argocd-initial-admin-secret -o jsonpath="{.data.password}" | base64 --decode; echo
+
 # Get Grafana admin password
 get-grafana-password:
     @echo "Grafana admin password:"

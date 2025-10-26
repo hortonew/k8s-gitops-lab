@@ -2,3 +2,4 @@ helm/values/defaults-*
 target/
 tmp/
 TODO.md
+argocd-apps/wip-*
