@@ -5,7 +5,7 @@ default:
     @just --list
 
 # Set up the complete lab environment
-setup: create-cluster install-prometheus install-blackbox install-grafana install-argocd install-metrics-server install-minio port-forward
+setup: create-cluster install-argocd install-prometheus-argocd install-grafana-argocd install-metrics-server install-minio port-forward
     @echo "🎉 Lab setup complete!"
     @echo ""
     @echo "Grafana UI: http://localhost:3000 (admin/admin)"
@@ -41,28 +41,28 @@ install-argocd:
         --wait
     kubectl -n argocd get secret argocd-initial-admin-secret -o jsonpath="{.data.password}" | base64 -d
 
-# Install Prometheus via Helm
-install-prometheus:
-    @echo "📈 Installing Prometheus..."
-    helm repo add prometheus-community https://prometheus-community.github.io/helm-charts
-    helm repo update
-    kubectl create namespace prometheus --dry-run=client -o yaml | kubectl apply -f -
-    helm upgrade --install prometheus prometheus-community/kube-prometheus-stack \
-        --namespace prometheus \
-        --values helm/values/prometheus-values.yaml \
-        --wait
-    @echo "✅ Prometheus installed"
+# # Install Prometheus via Helm
+# install-prometheus:
+#     @echo "📈 Installing Prometheus..."
+#     helm repo add prometheus-community https://prometheus-community.github.io/helm-charts
+#     helm repo update
+#     kubectl create namespace prometheus --dry-run=client -o yaml | kubectl apply -f -
+#     helm upgrade --install prometheus prometheus-community/kube-prometheus-stack \
+#         --namespace prometheus \
+#         --values helm/values/prometheus-values.yaml \
+#         --wait
+#     @echo "✅ Prometheus installed"
 
-# Install Blackbox Exporter via Helm
-install-blackbox:
-    @echo "🔍 Installing Blackbox Exporter..."
-    helm repo add prometheus-community https://prometheus-community.github.io/helm-charts
-    helm repo update
-    helm upgrade --install blackbox-exporter prometheus-community/prometheus-blackbox-exporter \
-        --namespace prometheus \
-        --values helm/values/blackbox-exporter-values.yaml \
-        --wait
-    @echo "✅ Blackbox Exporter installed"
+# # Install Blackbox Exporter via Helm
+# install-blackbox:
+#     @echo "🔍 Installing Blackbox Exporter..."
+#     helm repo add prometheus-community https://prometheus-community.github.io/helm-charts
+#     helm repo update
+#     helm upgrade --install blackbox-exporter prometheus-community/prometheus-blackbox-exporter \
+#         --namespace prometheus \
+#         --values helm/values/blackbox-exporter-values.yaml \
+#         --wait
+#     @echo "✅ Blackbox Exporter installed"
 
 # Install Grafana via Helm
 install-grafana:
@@ -86,9 +86,20 @@ install-metrics-server:
 install-minio:
     @echo "🚀 Installing Minio via ArgoCD Application..."
     kubectl apply -f argocd-apps/7-minio/application.yml
-    #echo "💤 Waiting for Minio to be ready..."
-    kubectl -n minio wait --for=condition=available --timeout=120s deployment/minio
     @echo "✅ Minio application deployed via ArgoCD"
+
+# Install Prometheus via ArgoCD Application
+install-prometheus-argocd:
+    @echo "📈 Installing Prometheus via ArgoCD Application..."
+    kubectl apply -f argocd-apps/8-prometheus/application.yml
+    kubectl apply -f argocd-apps/9-prometheus-blackbox-exporter/application.yml
+    @echo "✅ Prometheus application deployed via ArgoCD"
+
+# Install Grafana via ArgoCD Application
+install-grafana-argocd:
+    @echo "📊 Installing Grafana via ArgoCD Application..."
+    kubectl apply -f argocd-apps/10-grafana/application.yml
+    @echo "✅ Grafana application deployed via ArgoCD"
 
 # Port forward
 port-forward:
