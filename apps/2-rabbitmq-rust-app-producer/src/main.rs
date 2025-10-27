@@ -4,7 +4,7 @@ use lapin::{
     BasicProperties, Connection, ConnectionProperties,
 };
 use log::{error, info};
-use pyroscope::{PyroscopeAgent};
+use pyroscope::PyroscopeAgent;
 use pyroscope_pprofrs::{pprof_backend, PprofConfig};
 
 #[tokio::main]
@@ -22,11 +22,10 @@ async fn run() -> Result<(), Box<dyn std::error::Error>> {
     println!("env logger initialized");
 
     // Get Pyroscope configuration from environment variables
-    let pyroscope_url = std::env::var("PYROSCOPE_SERVER_ADDRESS")
-        .unwrap_or_else(|_| "http://pyroscope.pyroscope.svc.cluster.local:4040".to_string());
-    let app_name = std::env::var("PYROSCOPE_APPLICATION_NAME")
-        .unwrap_or_else(|_| "rabbitmq-rust-producer".to_string());
-    
+    let pyroscope_url =
+        std::env::var("PYROSCOPE_SERVER_ADDRESS").unwrap_or_else(|_| "http://pyroscope.pyroscope.svc.cluster.local:4040".to_string());
+    let app_name = std::env::var("PYROSCOPE_APPLICATION_NAME").unwrap_or_else(|_| "rabbitmq-rust-producer".to_string());
+
     info!("Initializing Pyroscope profiling...");
     info!("Pyroscope URL: {}", pyroscope_url);
     info!("Application Name: {}", app_name);
@@ -34,10 +33,7 @@ async fn run() -> Result<(), Box<dyn std::error::Error>> {
     // Initialize Pyroscope agent
     let agent = PyroscopeAgent::builder(&pyroscope_url, &app_name)
         .backend(pprof_backend(PprofConfig::new().sample_rate(100)))
-        .tags(vec![
-            ("service", "rabbitmq-producer"),
-            ("component", "producer"),
-        ])
+        .tags(vec![("service", "rabbitmq-producer"), ("component", "producer")])
         .build()?;
 
     // Start the profiling agent

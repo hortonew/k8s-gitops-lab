@@ -5,7 +5,7 @@ use lapin::{
     Connection, ConnectionProperties,
 };
 use log::{error, info};
-use pyroscope::{PyroscopeAgent};
+use pyroscope::PyroscopeAgent;
 use pyroscope_pprofrs::{pprof_backend, PprofConfig};
 
 #[tokio::main]
@@ -22,11 +22,10 @@ async fn run() -> Result<(), Box<dyn std::error::Error>> {
     env_logger::init();
 
     // Get Pyroscope configuration from environment variables
-    let pyroscope_url = std::env::var("PYROSCOPE_SERVER_ADDRESS")
-        .unwrap_or_else(|_| "http://pyroscope.pyroscope.svc.cluster.local:4040".to_string());
-    let app_name = std::env::var("PYROSCOPE_APPLICATION_NAME")
-        .unwrap_or_else(|_| "rabbitmq-rust-consumer".to_string());
-    
+    let pyroscope_url =
+        std::env::var("PYROSCOPE_SERVER_ADDRESS").unwrap_or_else(|_| "http://pyroscope.pyroscope.svc.cluster.local:4040".to_string());
+    let app_name = std::env::var("PYROSCOPE_APPLICATION_NAME").unwrap_or_else(|_| "rabbitmq-rust-consumer".to_string());
+
     info!("Initializing Pyroscope profiling...");
     info!("Pyroscope URL: {}", pyroscope_url);
     info!("Application Name: {}", app_name);
@@ -34,10 +33,7 @@ async fn run() -> Result<(), Box<dyn std::error::Error>> {
     // Initialize Pyroscope agent
     let agent = PyroscopeAgent::builder(&pyroscope_url, &app_name)
         .backend(pprof_backend(PprofConfig::new().sample_rate(100)))
-        .tags(vec![
-            ("service", "rabbitmq-consumer"),
-            ("component", "consumer"),
-        ])
+        .tags(vec![("service", "rabbitmq-consumer"), ("component", "consumer")])
         .build()?;
 
     // Start the profiling agent
@@ -76,12 +72,7 @@ async fn run() -> Result<(), Box<dyn std::error::Error>> {
 
     // Start consuming messages
     let mut consumer = channel
-        .basic_consume(
-            queue_name,
-            "consumer_tag",
-            BasicConsumeOptions::default(),
-            FieldTable::default(),
-        )
+        .basic_consume(queue_name, "consumer_tag", BasicConsumeOptions::default(), FieldTable::default())
         .await
         .expect("Failed to start consuming");
     info!("Started consuming messages from queue '{}'", queue_name);

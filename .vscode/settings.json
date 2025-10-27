@@ -1,0 +1,6 @@
+{
+    "rust-analyzer.linkedProjects": [
+        "apps/2-rabbitmq-rust-app-consumer/Cargo.toml",
+        "apps/2-rabbitmq-rust-app-producer/Cargo.toml"
+    ]
+}
