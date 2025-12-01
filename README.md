@@ -26,20 +26,18 @@ helm upgrade --install argo-cd argo/argo-cd \
 # get admin secret
 kubectl -n argocd get secret argocd-initial-admin-secret -o jsonpath="{.data.password}" | base64 -d
 
-# Set up prometheus
-kubectl apply -f argocd-apps/8-prometheus/application.yml
-kubectl apply -f argocd-apps/9-prometheus-blackbox-exporter/application.yml
-
-# Set up grafana
-kubectl apply -f argocd-apps/10-grafana/application.yml
-
 # Set up metrics server
 kubectl apply -f argocd-apps/0-metrics-server/application.yml
 
 # Set up cert manager
 kubectl apply -f argocd-apps/1-cert-manager/application.yml
 
-# see Justfile setup command for more commands ran automatically
+# Optional: Set up prometheus
+kubectl apply -f argocd-apps/8-prometheus/application.yml
+kubectl apply -f argocd-apps/9-prometheus-blackbox-exporter/application.yml
+
+# Optional: Set up grafana
+kubectl apply -f argocd-apps/10-grafana/application.yml
 ```
 
 ## Port Forward
@@ -54,51 +52,19 @@ just port-forward
 #   ArgoCD UI: http://localhost:8080
 #   Minio API: http://localhost:9000
 #   Minio Console: http://localhost:9001
+
+# Or manually:
+kubectl port-forward -n argocd svc/argo-cd-argocd-server 8080:80
+kubectl port-forward -n grafana svc/grafana 3000:80
+kubectl port-forward -n prometheus svc/prometheus-kube-prometheus-prometheus 9090:9090
+# ...
 ```
 
 ## Teardown
 
 ```sh
 just destroy
-```
 
-## Kind
-
-```sh
-kind create cluster --name gitops --config kind_config.yml
-```
-
-## ArgoCD
-
-![ArgoCD Applications](images/argocd-applications.png)
-
-```sh
-# Install
-helm upgrade --install argo-cd bitnami/argo-cd --create-namespace -n argocd -f helm/values/argocd.yml
-k get secrets argocd-secret -n argocd -o yaml | grep clearPassword | awk '{print $2}' | base64 -d
-
-# GUI
-k port-forward svc/argo-cd-server -n argocd 8081:80
-```
-
-![RabbitMQ Queues](images/rabbitmq-queues.png)
-
-### Metallb
-
-Start to build out ingress controllers (nginx/traefik), but first we need some IPs.
-
-```sh
-k apply -f argocd-apps/5-metallb/
-```
-
-### Traefik Ingress
-
-```sh
-k apply -f argocd-apps/6-ingress-controller-traefik/
-```
-
-### Nginx Ingress
-
-```sh
-k apply -f argocd-apps/6-ingress-controller-nginx
+# or
+kind delete cluster --name gitops
 ```
